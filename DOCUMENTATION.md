@@ -1,102 +1,90 @@
-# IntentCast: Production-Grade Multimodal AAC System
+# IntentCast / Sonora AI: Engineering & Design Specification
 
-## 1. Project Overview
-**IntentCast** is an advanced Augmented and Alternative Communication (AAC) system designed specifically for children with speech impairments or non-verbal conditions. Unlike legacy AAC devices that rely on static buttons or robotic voices, IntentCast leverages **Fault-Tolerant Fusion**—merging fragmented speech, facial micro-expressions, body gestures, and acoustic energy into a single, cohesive intent.
+## 1. System Overview
+IntentCast is an Augmented and Alternative Communication (AAC) system engineered for pediatric users with speech impairments or non-verbal conditions. The architecture performs real-time multimodal fusion—aggregating fragmented speech acoustics, facial micro-expressions, and physical gestures—to reconstruct grammatically correct and emotionally contextualized speech.
 
-The core goal is to reconstruct "junky" or unclear speech into grammatically perfect, emotionally tuned sentences in real-time.
-
----
-
-## 2. System Architecture
-The project follows a decoupled **Edge-Sensor + Parallel Inference** architecture.
-
-### Phase 1: The Edge Sensors (Frontend)
-- **Capture:** The React/Vite frontend serves as the sensory layer. It uses **MediaPipe** to track 478 facial landmarks and hand gestures.
-- **Payload:** It packages a 1.5s audio blob and specific visual metadata (like face crops) into a unified JSON object.
-- **Transport:** Data is blasted to the backend via a low-latency **WebSocket** bridge.
-
-### Phase 2: Asynchronous Parallel Processing (Backend)
-The FastAPI backend utilizes `asyncio.gather()` to run three intensive inference tasks simultaneously to maintain sub-1.5s latency:
-1.  **Function A (Literal Transcript):** `Sarvam STT` (Saaras v3) attempts to find whatever literal fragments it can from the dysarthric speech.
-2.  **Function B (Acoustic Context):** `SenseVoice` (via HuggingFace) analyzes the raw energy and "tone" of the sound to detect stress, urgency, or exhaustion.
-3.  **Function C (Visual Context):** `HSEmotionONNX` runs inference on the face crop to identify micro-expressions (anger, sadness, joy).
-
-### Phase 3: The Intent Engine (Gemini Flash)
-The results from all three parallel streams are merged into a "Consensus State" and passed to **Gemini 1.5 Flash**. The LLM acts as an "Intent Reconstructor," using the visual/acoustic context to turn fragments like *"wa... ter..."* (with a "Urgent/Stressed" context) into *"I am very thirsty, I need water right now."*
-
-### Phase 4: Emotion-Tuned Localization (Output)
-The reconstructed intent is sent to **Sarvam TTS** (Bulbul v3). The system uses the detected emotion to tune the voice parameters (Pace/Speaker), generating a child-like, empathetic voice in the target language (Tamil, Hindi, or English).
+The following document serves as the implementation specification for the engineering and design teams, standardizing performance targets, user interface parameters, layout constraints, and logical flows.
 
 ---
 
-## 3. Module Breakdown (Code Logic)
+## 2. Interaction & Performance Targets
 
-### Backend (`/`)
-- `main.py`: The central nervous system. Manages WebSocket connections and orchestrates the parallel `asyncio` execution flow.
-- `facial_emotion.py`: Implements `HSEmotionRecognizer`. It detects faces and predicts emotions using a lightweight ONNX model for high performance.
-- `gesture_detector.py`: Uses MediaPipe's `GestureRecognizer` to identify specific signals like "Stop," "Thumbs Up," or "Pointing."
-- `sarvam_stt.py`: Interfaces with Sarvam's Speech-to-Text API, specifically utilizing `codemix` mode for multilingual environments.
-- `acoustic_analyzer.py`: A `librosa`-based fallback that calculates RMS energy and pitch variance if the SenseVoice API is unavailable.
-- `emotion_fusion.py`: Pure logic that weighs the confidence of different signals. For example, if a child points at a "Stop" sign, it overrides the vocal transcript.
-- `intent_llm.py`: Contains the system prompt for Gemini Flash. It ensures the reconstructed sentence sounds like a child and adheres to strict brevity rules.
+Concrete performance baselines ensure the communication loop feels instantaneous and prevents user frustration.
 
-### Frontend (`/frontend`)
-- `src/hooks/useWebSocket.js`: A custom hook that manages the persistent connection to the FastAPI server and handles binary/JSON message discrimination.
-- `src/components/Scanner.jsx`: (Logic implemented in Phase 2) The capture UI that displays the MediaPipe "skeleton" overlays and manages the `MediaRecorder` loop.
+### Latency Constraints
+*   **Processing Screen Latency:** `< 300ms`
+    *   *Rationale:* Users must receive immediate visual confirmation that the system is processing their input to prevent repetitive triggering or abandonment.
+*   **Emergency Panel Activation Latency:** `< 500ms`
+    *   *Rationale:* Critical health and safety requests must be fulfilled within half a second to guarantee reliability during distress.
+*   **Tactile Feedback Latency:** `< 100ms`
+    *   *Rationale:* Immediate UI state-change on button interaction is required to confirm successful target acquisition.
 
----
-
-## 4. Case Scenarios (The Fusion Engine)
-
-### Scenario A: The Urgent Request
-- **Audio Transcript:** *"ah... ah..."* (Unclear)
-- **Acoustic Emotion:** `<|URGENT|>` (High energy/volume)
-- **Visual Emotion:** `Angry/Frustrated`
-- **Gesture:** `Pointing Down`
-- **LLM Context:** Fragment + Urgent + Frustrated + Pointing.
-- **Intentcast Output:** "I need you to help me with this right now!" (Spoken in an assertive, fast-paced voice).
-
-### Scenario B: The Tired Refusal
-- **Audio Transcript:** *"no..."* (Weak/Whispered)
-- **Acoustic Emotion:** `Exhausted` (Low energy)
-- **Visual Emotion:** `Sad`
-- **Gesture:** `Open Palm (Stop)`
-- **Intentcast Output:** "I'm really tired, I don't want to do this anymore." (Spoken in a soft, slow-paced voice).
+### Touch & Accessibility Parameters
+*   **Component Sizing:** Minimum `60px` by `60px` touch targets; `80px` preferred.
+    *   *Rationale:* Accommodates users with varying degrees of fine motor control and prevents misclicks.
+*   **Action Triggers:** All emergency and core communication interactions must fire on `press-down` (`touchstart` / `mousedown`), not on `release` (`touchend` / `mouseup`).
+    *   *Rationale:* Reduces the cognitive and physical load required to execute a command, particularly for users experiencing muscle fatigue or spasms.
 
 ---
 
-## 5. Setup & Installation
+## 3. Core Interface Specifications
 
-### Backend Setup
-1.  **Python Version:** 3.10+
-2.  **Install Dependencies:**
-    ```bash
-    pip install fastapi uvicorn requests librosa numpy opencv-python hsemotion-onnx google-genai mediapipe
-    ```
-3.  **Environment Variables (`.env`):**
-    ```env
-    SARVAM_API_KEY=your_key_here
-    GEMINI_API_KEY=your_key_here
-    ```
-4.  **Run Server:**
-    ```bash
-    uvicorn main:app --host 0.0.0.0 --port 8000
-    ```
+### The Emergency Panel (Hardened Mode)
+The emergency panel is an isolated, hardened state prioritizing extreme reliability and speed over complex communication. 
 
-### Frontend Setup
-1.  **Node Version:** 18+
-2.  **Install:** `npm install`
-3.  **Run:** `npm run dev`
+*   **Speech Triggering:** As specified above, all emergency synthesized speech must fire on `press-down`. 
+*   **Touch-Isolated Microphone:** The panel must feature a dedicated, manually-triggered microphone element for unmuting when the patient is speaking. 
+    *   *Implementation:* This microphone can **only** be accessed and activated through direct, physical touch. Voice-activation or gesture-activation for this specific mic is disabled.
+    *   *Rationale:* Guarantees the system does not pick up ambient emergency noise or false positives, ensuring the patient's explicit vocalizations are only transmitted when physically intended.
+
+### Calm Mode Parameters
+Calm Mode handles sensory overload, a common requirement for the target demographic. When triggered, the system enforces the following parameters:
+
+*   **Visual Output:** Overall interface brightness is capped at `40%`. Interface contrast is softened to prevent harsh transitions. Bright, saturated colors are replaced with muted, low-stimuli palettes (e.g., `#2C3E50`, `#34495E`).
+*   **Audio Output:** The Text-to-Speech (TTS) voice profile is modified. Volume is reduced by `30%`, speaking pace is lowered by `15%`, and pitch variation is smoothed to reduce jarring auditory spikes.
+*   **Exit Conditions:** Calm Mode cannot be exited via complex voice commands. It requires an explicit, deliberate action (e.g., a two-second long-press on a dedicated UI element) to prevent accidental reversion to high-stimuli mode.
+    *   *Rationale:* Protects the user from sudden sensory spikes while allowing a predictable, reliable recovery path.
 
 ---
 
-## 6. Logic Flow Summary (The "Magic" Loop)
-1. **CAPTURE:** Client sends `[Audio_B64, Face_Crop_B64, Gesture_Label]`
-2. **PARALLEL:**
-   - Task 1: `SarvamSTT(Audio)` -> "transcript"
-   - Task 2: `SenseVoice(Audio)` -> "acoustic_emotion"
-   - Task 3: `HSEmotion(Face)` -> "visual_emotion"
-3. **MERGE:** Create metadata string: "Visual: Happy, Acoustic: Quiet, Gesture: Pointing"
-4. **RECONSTRUCT:** `Gemini(transcript + metadata)` -> "final_sentence"
-5. **SPEAK:** `SarvamTTS(final_sentence, emotion)` -> `WAV_Bytes`
-6. **EMIT:** Return `JSON + Audio` to Client for instant playback.
+## 4. Backend System Architecture
+
+The system utilizes an decoupled Edge-Sensor + Parallel Inference model to operate within the defined latency constraints.
+
+### 4.1 Edge Capture (Frontend)
+*   **Landmark Tracking:** Incorporates MediaPipe for tracking 478 facial landmarks and hand gestures via the client device.
+*   **Data Payload:** Constructs a synchronized JSON object consisting of a 1.5s audio buffer and visual metadata (face crops and gesture coordinates).
+*   **Data Transport:** Transmits payloads to the backend via a persistent, low-latency WebSocket connection.
+
+### 4.2 Asynchronous Processing (Backend)
+The FastAPI backend utilizes parallel asynchronous execution (`asyncio.gather`) to run three distinct models within the latency budget:
+*   **Literal Transcript Generation:** Pipeline utilizing `Sarvam STT` to extract decipherable word fragments.
+*   **Acoustic Context Analysis:** Pipeline utilizing `SenseVoice` to calculate RMS energy and pitch variance, determining stress, urgency, or fatigue.
+*   **Visual Context Analysis:** Pipeline utilizing `HSEmotionONNX` on face crops to categorize micro-expressions.
+
+### 4.3 Intent Reconstruction
+*   **Consensus State:** The parallel outputs are synthesized into a unified structured object.
+*   **LLM Pipeline:** Gemini 1.5 Flash evaluates the Consensus State. Prompts enforce strict brevity constraints to expand fragmented speech (e.g., "wa... ter", Stressed) into explicit actionable sentences ("I need water right now").
+*   **Text-to-Speech (TTS):** The reconstructed sentence is routed to `Sarvam TTS`. Voice parameters (pace, speaker model) are dynamically assigned based on the evaluated emotional state.
+
+---
+
+## 5. Development Setup & Deployment
+
+### Environment Requirements
+*   **Backend:** Python 3.10+
+*   **Frontend:** Node.js 18+
+
+### Initialization
+```bash
+# Backend Installation & Execution
+pip install fastapi uvicorn requests librosa numpy opencv-python hsemotion-onnx google-genai mediapipe
+export SARVAM_API_KEY="<production_key>"
+export GEMINI_API_KEY="<production_key>"
+uvicorn main:app --host 0.0.0.0 --port 8000
+
+# Frontend Installation & Execution
+cd frontend
+npm install
+npm run dev
+```

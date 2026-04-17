@@ -1,0 +1,272 @@
+[
+{
+"id": 1,
+"audio_transcript": "த... த...",
+"acoustic_emotion": "high_energy",
+"visual_emotion": "frustrated",
+"gesture": "point",
+"intent": "எனக்குத் தண்ணீர் வேண்டும்",
+"urgency": "high"
+},
+{
+"id": 2,
+"audio_transcript": "இ... இல்லை...",
+"acoustic_emotion": "low_energy",
+"visual_emotion": "sad",
+"gesture": "stop",
+"intent": "எனக்கு இதைச் செய்ய விருப்பமில்லை",
+"urgency": "low"
+},
+{
+"id": 3,
+"audio_transcript": "க... கழி...",
+"acoustic_emotion": "medium_energy",
+"visual_emotion": "neutral",
+"gesture": "point",
+"intent": "நான் கழிவறைக்குச் செல்ல வேண்டும்",
+"urgency": "medium"
+},
+{
+"id": 4,
+"audio_transcript": "ஆ! ஆ!",
+"acoustic_emotion": "high_energy",
+"visual_emotion": "pain",
+"gesture": "point_body",
+"intent": "எனக்கு வலிக்கிறது",
+"urgency": "high"
+},
+{
+"id": 5,
+"audio_transcript": "ப... ப...",
+"acoustic_emotion": "medium_energy",
+"visual_emotion": "neutral",
+"gesture": "point",
+"intent": "எனக்கு பசிக்கிறது",
+"urgency": "medium"
+},
+{
+"id": 6,
+"audio_transcript": "ஆ... ஆம்...",
+"acoustic_emotion": "low_energy",
+"visual_emotion": "happy",
+"gesture": "thumbs_up",
+"intent": "ஆம்",
+"urgency": "low"
+},
+{
+"id": 7,
+"audio_transcript": "இல்லை!",
+"acoustic_emotion": "high_energy",
+"visual_emotion": "angry",
+"gesture": "stop",
+"intent": "இல்லை",
+"urgency": "medium"
+},
+{
+"id": 8,
+"audio_transcript": "உ... உ...",
+"acoustic_emotion": "high_energy",
+"visual_emotion": "fear",
+"gesture": "wave",
+"intent": "எனக்கு உதவி வேண்டும்",
+"urgency": "high"
+},
+{
+"id": 9,
+"audio_transcript": "ச... ச...",
+"acoustic_emotion": "low_energy",
+"visual_emotion": "sad",
+"gesture": "none",
+"intent": "நான் சோர்வாக இருக்கிறேன்",
+"urgency": "low"
+},
+{
+"id": 10,
+"audio_transcript": "தூ...",
+"acoustic_emotion": "low_energy",
+"visual_emotion": "neutral",
+"gesture": "none",
+"intent": "நான் தூங்க வேண்டும்",
+"urgency": "low"
+},
+{
+"id": 11,
+"audio_transcript": "தண்...",
+"acoustic_emotion": "medium_energy",
+"visual_emotion": "neutral",
+"gesture": "point",
+"intent": "எனக்குத் தண்ணீர் வேண்டும்",
+"urgency": "medium"
+},
+{
+"id": 12,
+"audio_transcript": "நி... நில்...",
+"acoustic_emotion": "high_energy",
+"visual_emotion": "angry",
+"gesture": "stop",
+"intent": "இதை நிறுத்து",
+"urgency": "high"
+},
+{
+"id": 13,
+"audio_transcript": "இன்னும்...",
+"acoustic_emotion": "medium_energy",
+"visual_emotion": "neutral",
+"gesture": "point",
+"intent": "எனக்கு இன்னும் வேண்டும்",
+"urgency": "medium"
+},
+{
+"id": 14,
+"audio_transcript": "வே... வேண்டாம்...",
+"acoustic_emotion": "low_energy",
+"visual_emotion": "sad",
+"gesture": "none",
+"intent": "எனக்கு இது வேண்டாம்",
+"urgency": "low"
+},
+{
+"id": 15,
+"audio_transcript": "த... தயவு...",
+"acoustic_emotion": "medium_energy",
+"visual_emotion": "neutral",
+"gesture": "none",
+"intent": "தயவுசெய்து எனக்கு உதவுங்கள்",
+"urgency": "medium"
+},
+{
+"id": 16,
+"audio_transcript": "தண்!",
+"acoustic_emotion": "high_energy",
+"visual_emotion": "angry",
+"gesture": "point",
+"intent": "எனக்கு உடனே தண்ணீர் வேண்டும்",
+"urgency": "high"
+},
+{
+"id": 17,
+"audio_transcript": "இல்லை...",
+"acoustic_emotion": "low_energy",
+"visual_emotion": "neutral",
+"gesture": "thumbs_down",
+"intent": "இல்லை",
+"urgency": "low"
+},
+{
+"id": 18,
+"audio_transcript": "உத...",
+"acoustic_emotion": "medium_energy",
+"visual_emotion": "sad",
+"gesture": "wave",
+"intent": "எனக்கு உதவுங்கள்",
+"urgency": "medium"
+},
+{
+"id": 19,
+"audio_transcript": "வ...",
+"acoustic_emotion": "high_energy",
+"visual_emotion": "pain",
+"gesture": "point_body",
+"intent": "எனக்கு வலி ஏற்படுகிறது",
+"urgency": "high"
+},
+{
+"id": 20,
+"audio_transcript": "கழி...",
+"acoustic_emotion": "high_energy",
+"visual_emotion": "frustrated",
+"gesture": "point",
+"intent": "நான் கழிவறைக்குச் செல்ல வேண்டும்",
+"urgency": "high"
+},
+{
+"id": 21,
+"audio_transcript": "ஆம்...",
+"acoustic_emotion": "medium_energy",
+"visual_emotion": "happy",
+"gesture": "nod",
+"intent": "ஆம்",
+"urgency": "low"
+},
+{
+"id": 22,
+"audio_transcript": "இல்லை...",
+"acoustic_emotion": "medium_energy",
+"visual_emotion": "frustrated",
+"gesture": "stop",
+"intent": "இல்லை",
+"urgency": "medium"
+},
+{
+"id": 23,
+"audio_transcript": "சா...",
+"acoustic_emotion": "medium_energy",
+"visual_emotion": "neutral",
+"gesture": "point",
+"intent": "நான் சாப்பிட விரும்புகிறேன்",
+"urgency": "medium"
+},
+{
+"id": 24,
+"audio_transcript": "குடி...",
+"acoustic_emotion": "low_energy",
+"visual_emotion": "neutral",
+"gesture": "point",
+"intent": "நான் தண்ணீர் குடிக்க விரும்புகிறேன்",
+"urgency": "low"
+},
+{
+"id": 25,
+"audio_transcript": "சோர்...",
+"acoustic_emotion": "low_energy",
+"visual_emotion": "sad",
+"gesture": "none",
+"intent": "நான் சோர்வாக இருக்கிறேன்",
+"urgency": "low"
+},
+{
+"id": 26,
+"audio_transcript": "ஆ!",
+"acoustic_emotion": "high_energy",
+"visual_emotion": "fear",
+"gesture": "wave",
+"intent": "சீக்கிரம் எனக்கு உதவுங்கள்",
+"urgency": "high"
+},
+{
+"id": 27,
+"audio_transcript": "இல்லை...",
+"acoustic_emotion": "low_energy",
+"visual_emotion": "neutral",
+"gesture": "none",
+"intent": "இல்லை",
+"urgency": "low"
+},
+{
+"id": 28,
+"audio_transcript": "தண்...",
+"acoustic_emotion": "medium_energy",
+"visual_emotion": "neutral",
+"gesture": "point",
+"intent": "தயவுசெய்து தண்ணீர் கொடுங்கள்",
+"urgency": "medium"
+},
+{
+"id": 29,
+"audio_transcript": "உதவி...",
+"acoustic_emotion": "low_energy",
+"visual_emotion": "sad",
+"gesture": "none",
+"intent": "தயவுசெய்து உதவுங்கள்",
+"urgency": "low"
+},
+{
+"id": 30,
+"audio_transcript": "நில்!",
+"acoustic_emotion": "high_energy",
+"visual_emotion": "angry",
+"gesture": "stop",
+"intent": "உடனடியாக நிறுத்து",
+"urgency": "high"
+}
+]

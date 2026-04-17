@@ -213,7 +213,6 @@ export default function Scanner({ onPayloadReady, disabled }) {
 
   useEffect(() => {
     if (disabled) {
-      // Stop any in-progress recording
       stopRecording();
       setVadStatus('Paused');
       setVolumeLevel(0);
@@ -222,10 +221,7 @@ export default function Scanner({ onPayloadReady, disabled }) {
     }
   }, [disabled, stopRecording]);
 
-  // ── Derived UI values ─────────────────────────────────────────────────
-
   const isRecording = vadStatus === '🎙️ Recording…';
-  const isProcessing = vadStatus === 'Processing…';
 
   return (
     <div className="scanner-wrapper">
@@ -233,90 +229,17 @@ export default function Scanner({ onPayloadReady, disabled }) {
         ref={videoRef}
         autoPlay playsInline muted
         className="scanner-video"
-        style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '12px' }}
       />
 
-      {/* HUD Overlay */}
-      <div style={{
-        position: 'absolute', top: 16, left: 16,
-        color: '#22d3ee', fontFamily: 'monospace', fontSize: '12px',
-        background: 'rgba(0,0,0,0.6)', padding: '10px 14px', borderRadius: '10px',
-        lineHeight: '2', backdropFilter: 'blur(8px)',
-        border: `1px solid ${isRecording ? 'rgba(239,68,68,0.5)' : 'rgba(34,211,238,0.2)'}`,
-        transition: 'border-color 0.3s ease',
-        minWidth: 160,
-      }}>
-        <div style={{ fontWeight: 700, letterSpacing: '0.08em' }}>⬡ EDGE SENSOR HUB</div>
-        <div>VAD: <span style={{
-          color: isRecording ? '#f87171' : isProcessing ? '#fbbf24' : '#4ade80',
-          fontWeight: 600,
-        }}>{vadStatus}</span></div>
-        {isRecording && (
-          <div>Duration: <span style={{ color: '#fbbf24' }}>{recDuration}s</span></div>
-        )}
-        <div style={{ marginTop: 6 }}>
-          <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)', marginBottom: 3 }}>MIC LEVEL</div>
-          <div style={{
-            width: 120, height: 5, background: 'rgba(255,255,255,0.1)',
-            borderRadius: 3, overflow: 'hidden'
-          }}>
-            <div style={{
-              height: '100%',
-              width: `${volumeLevel}%`,
-              background: volumeLevel > 60
-                ? 'linear-gradient(90deg,#fbbf24,#ef4444)'
-                : 'linear-gradient(90deg,#22d3ee,#4ade80)',
-              transition: `width ${VAD_POLL_MS}ms linear`,
-              boxShadow: volumeLevel > SPEECH_THRESHOLD * 0.4
-                ? '0 0 6px rgba(34,211,238,0.8)' : 'none'
-            }} />
-          </div>
-        </div>
-      </div>
-
-      {/* Recording progress bar at bottom */}
-      {isRecording && (
+      {/* Persistent global UI element for VAD Status / Recording Indicator injected in the HUD automatically via the App component instead of hardcoded in Scanner block now. Scanner handles only background stream layers. */}
+      
+      {/* VAD Level background pulse subtle hook */}
+      {!disabled && isRecording && (
         <div style={{
-          position: 'absolute', bottom: 0, left: 0, right: 0,
-          height: '4px', background: 'rgba(0,0,0,0.4)',
-          borderRadius: '0 0 12px 12px', overflow: 'hidden'
-        }}>
-          <div style={{
-            height: '100%',
-            width: `${Math.min(100, (parseFloat(recDuration) / (MAX_RECORD_MS / 1000)) * 100)}%`,
-            background: 'linear-gradient(90deg, #ef4444, #f97316)',
-            transition: 'width 0.1s linear',
-            boxShadow: '0 0 8px rgba(239,68,68,0.6)'
-          }} />
-        </div>
-      )}
-
-      {/* REC dot */}
-      {isRecording && (
-        <div style={{
-          position: 'absolute', top: 16, right: 16,
-          width: 12, height: 12, borderRadius: '50%',
-          background: '#ef4444',
-          animation: 'pulse-ring 1.2s infinite'
+           position: 'absolute', inset: 0,
+           boxShadow: `inset 0 0 ${10 + (volumeLevel)}px rgba(239, 68, 68, 0.4)`,
+           pointerEvents: 'none', transition: 'box-shadow 0.1s ease', zIndex: 1
         }} />
-      )}
-
-      {/* Listening indicator — subtle waveform bars */}
-      {!isRecording && !isProcessing && !disabled && (
-        <div style={{
-          position: 'absolute', bottom: 16, right: 16,
-          display: 'flex', alignItems: 'flex-end', gap: 3, height: 20
-        }}>
-          {[0.4, 0.7, 1, 0.6, 0.3].map((h, i) => (
-            <div key={i} style={{
-              width: 3, borderRadius: 2,
-              height: `${Math.max(3, volumeLevel * h * 0.2)}px`,
-              background: '#22d3ee',
-              transition: `height ${VAD_POLL_MS}ms ease`,
-              opacity: 0.7,
-            }} />
-          ))}
-        </div>
       )}
     </div>
   );

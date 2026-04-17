@@ -3,28 +3,31 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useWebSocket } from './hooks/useWebSocket';
 import Scanner from './components/Scanner';
 import SettingsModal from './components/SettingsModal';
+import EmergencyPanel from './components/EmergencyPanel';
+import CalmModeWrapper from './components/CalmModeWrapper';
 
 const WS_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:8000/ws';
 
 export default function App() {
   const { isConnected, sendPayload, lastMessage } = useWebSocket(WS_URL);
-  
+
   const [reconstructed, setReconstructed] = useState('');
   const [pipelineData, setPipelineData] = useState({
     transcript: '',
-    emotion_context: '',
-    latency: 0
+    emotion_context: ''
   });
+  1
   const [isScanning, setIsScanning] = useState(true);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isEmergencyMode, setIsEmergencyMode] = useState(false);
+  const [isCalmMode, setIsCalmMode] = useState(false);
 
   // When Scanner completes its 1.5s cycle, it hands us the payload
   const handlePayloadReady = useCallback((payload) => {
-    if (isConnected) {
-      // Append API keys from local storage
+    if (isConnected && !isEmergencyMode) {
       const geminiKey = localStorage.getItem('GEMINI_API_KEY');
       const sarvamKey = localStorage.getItem('SARVAM_API_KEY');
-      
+
       const payloadWithKeys = {
         ...payload,
         config: {
@@ -35,161 +38,185 @@ export default function App() {
       };
 
       sendPayload(payloadWithKeys);
-      console.log("Sent Edge Payload (1.5s Chunk) -> FastAPI", {
-         pts: payload.metrics?.target_pts,
-         audio_size: payload.data?.audio_chunk_b64?.length
-      });
     }
-  }, [isConnected, sendPayload]);
+  }, [isConnected, isEmergencyMode, sendPayload]);
 
-  // Handle incoming websocket messages
   useEffect(() => {
     if (!lastMessage) return;
 
     if (lastMessage.type === 'stt_result') {
-      // ⚡ LIVE: Show STT + emotions the moment they arrive, before LLM finishes
       setPipelineData({
         transcript: lastMessage.transcript || '',
         emotion_context: lastMessage.emotion_context || '',
-        latency: lastMessage.latency_sec || 0
       });
       if (lastMessage.transcript) {
-        setReconstructed(`🎙️ Heard: "${lastMessage.transcript}" — Running LLM...`);
+        setReconstructed(`🎙️ "${lastMessage.transcript}"...`);
       }
     } else if (lastMessage.type === 'result' && lastMessage.reconstructed) {
-      // ✅ FINAL: Full pipeline complete
       setReconstructed(lastMessage.reconstructed);
       setPipelineData(prev => ({
         ...prev,
         transcript: lastMessage.transcript || prev.transcript,
         emotion_context: lastMessage.emotion_context || prev.emotion_context,
-        latency: lastMessage.latency_sec || prev.latency
       }));
-      
-      // Autoplay the TTS audio response if it exists
+
       if (lastMessage.audio_b64) {
         const audio = new Audio('data:audio/wav;base64,' + lastMessage.audio_b64);
+        if (isCalmMode) {
+          audio.volume = 0.5;
+        }
         audio.play().catch(e => console.error('Audio playback failed:', e));
       }
     } else if (lastMessage.status === 'ack') {
-      setReconstructed('Analyzing multisensory stream...');
+      setReconstructed('Tracking Intent...');
     }
-  }, [lastMessage]);
+  }, [lastMessage, isCalmMode]);
 
   const parseEmotionContext = (context) => {
-     if (!context) return { visual: '-', acoustic: '-', gesture: '-' };
-     const visualMatch = context.match(/Visual Emotion:\s*([^.]+)/);
-     const acousticMatch = context.match(/Acoustic Emotion:\s*([^.]+)/);
-     const gestureMatch = context.match(/Gesture Detected:\s*([^.]+)/);
-     
-     return {
-        visual: visualMatch ? visualMatch[1].trim() : '-',
-        acoustic: acousticMatch ? acousticMatch[1].trim() : '-',
-        gesture: gestureMatch ? gestureMatch[1].trim() : '-',
-     };
+    if (!context) return { visual: null, acoustic: null, gesture: null };
+    const visualMatch = context.match(/Visual Emotion:\s*([^.]+)/);
+    const acousticMatch = context.match(/Acoustic Emotion:\s*([^.]+)/);
+    const gestureMatch = context.match(/Gesture Detected:\s*([^.]+)/);
+
+    const v = visualMatch ? visualMatch[1].trim() : null;
+    const a = acousticMatch ? acousticMatch[1].trim() : null;
+    const g = gestureMatch ? gestureMatch[1].trim() : null;
+
+    return {
+      visual: v && v !== '-' && v !== 'Unknown' ? v : null,
+      acoustic: a && a !== '-' && a !== 'Unknown' ? a : null,
+      gesture: g && g !== '-' && g !== 'Unknown' ? g : null,
+    };
   };
 
-  const parsedContext = parseEmotionContext(pipelineData.emotion_context);
+  const { visual, acoustic, gesture } = parseEmotionContext(pipelineData.emotion_context);
+
+  // High-end spring physics configuration
+  const springConf = { type: "spring", stiffness: 400, damping: 20 };
 
   return (
-    <div className="app-container">
-      
-      {/* LEFT: The Edge Scanner */}
-      <Scanner onPayloadReady={handlePayloadReady} disabled={!isScanning} />
+    <CalmModeWrapper isCalmMode={isCalmMode} onExitCalmMode={() => setIsCalmMode(false)}>
 
-      {/* RIGHT: Modern Dashboard */}
-      <div className="dashboard-section">
-        
-        {/* Header Panel */}
-        <div className="glass-panel header">
-          <div className="title-row">
-            <h1>IntentCast</h1>
-            <button className="btn-icon" onClick={() => setIsSettingsOpen(true)}>
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="3"></circle>
-                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-              </svg>
-            </button>
-          </div>
-          <p>Real-time Multimodal AAC Edge Hub</p>
-          
-          <div className="status-indicator">
-             {isConnected ? 
-                <><div className="status-dot"></div> Connected</> : 
-                <><div className="status-dot offline"></div> Offline</>
-             }
-          </div>
+      {/* 1. LAYER ONE: Fullscreen Edge Scanner Background */}
+      <Scanner onPayloadReady={handlePayloadReady} disabled={!isScanning || isEmergencyMode} />
+
+      {/* 2. LAYER TWO: AR Head-Up Display (HUD) Component Overlay */}
+      <div className="hud-layer">
+
+        {/* Absolute Header */}
+        <div style={{ position: 'absolute', top: 20, left: 24 }}>
+          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '1.25rem', fontWeight: 600, background: 'linear-gradient(to right, var(--accent), var(--accent2))', WebkitBackgroundClip: 'text', color: 'transparent', textShadow: '0 2px 4px rgba(0,0,0,0.8)' }}>
+            IntentCast
+          </h1>
         </div>
 
-        {/* Live Telemetry View */}
-        <div className="glass-panel telemetry-panel">
-          <h3>Live Telemetry</h3>
-          <div className="metrics-grid">
-            <div className="metric-card">
-              <div className="metric-label">Facial Emotion</div>
-              <div className="metric-value">{parsedContext.visual}</div>
-            </div>
-            <div className="metric-card">
-              <div className="metric-label">Acoustic Urgency</div>
-              <div className="metric-value">{parsedContext.acoustic}</div>
-            </div>
-            <div className="metric-card">
-              <div className="metric-label">Hand Gesture</div>
-              <div className="metric-value">{parsedContext.gesture}</div>
-            </div>
-            <div className="metric-card">
-              <div className="metric-label">LLM Latency</div>
-              <div className="metric-value">{pipelineData.latency ? `${pipelineData.latency.toFixed(2)}s` : '-'}</div>
-            </div>
-          </div>
-          
-          <div className="transcript-box" style={{ marginTop: '1rem', padding: '1rem', background: 'rgba(0,0,0,0.2)', borderRadius: '8px' }}>
-             <div className="metric-label">Raw Speech-to-Text (Sarvam):</div>
-             <div className="metric-value" style={{ fontSize: '1.1rem', marginTop: '0.5rem', fontWeight: 400 }}>
-                 {pipelineData.transcript || <span style={{opacity: 0.5}}>Awaiting speech...</span>}
-             </div>
-          </div>
+        <div className="status-indicator">
+          {isConnected ?
+            <><div className="status-dot"></div> CONNECTED</> :
+            <><div className="status-dot offline"></div> OFFLINE</>
+          }
         </div>
 
-        {/* Final Intent Output Panel */}
-        <div className="glass-panel terminal-panel">
-          <h3 style={{ margin: '0 0 10px 0', fontSize: '0.9rem', color: 'rgba(255,255,255,0.6)' }}>LLM Reconstructed Intent:</h3>
-          <AnimatePresence mode="wait">
-             {reconstructed ? (
-               <motion.span 
-                 key="text"
-                 initial={{ opacity: 0, y: 10 }}
-                 animate={{ opacity: 1, y: 0 }}
-                 exit={{ opacity: 0, y: -10 }}
-                 className="output-text"
-               >
-                 "{reconstructed}"
-               </motion.span>
-             ) : (
-               <motion.span 
-                 key="placeholder"
-                 initial={{ opacity: 0 }}
-                 animate={{ opacity: 1 }}
-                 className="output-text output-placeholder"
-               >
-                 Waiting for intent signature...
-               </motion.span>
-             )}
+        {/* Animated Emotion Orbs (Top Right HUD) */}
+        <div className="emotion-orbs">
+          <AnimatePresence>
+            {visual && (
+              <motion.div
+                key="visual" className="emotion-orb visual"
+                initial={{ opacity: 0, x: 50, scale: 0.8 }}
+                animate={{ opacity: 1, x: 0, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                transition={springConf}
+              >
+                👁️ {visual}
+              </motion.div>
+            )}
+            {acoustic && (
+              <motion.div
+                key="acoustic" className="emotion-orb acoustic"
+                initial={{ opacity: 0, x: 50, scale: 0.8 }}
+                animate={{ opacity: 1, x: 0, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                transition={springConf}
+              >
+                🔊 {acoustic}
+              </motion.div>
+            )}
+            {gesture && (
+              <motion.div
+                key="gesture" className="emotion-orb gesture"
+                initial={{ opacity: 0, x: 50, scale: 0.8 }}
+                animate={{ opacity: 1, x: 0, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                transition={springConf}
+              >
+                ✋ {gesture}
+              </motion.div>
+            )}
           </AnimatePresence>
         </div>
 
-        <div className="controls">
-           <button className="btn-primary" onClick={() => setIsScanning(!isScanning)}>
-             {isScanning ? 'Halt Scanner' : 'Resume Scanner'}
-           </button>
+        {/* Reconstructed Intent (Center High) */}
+        <div className="intent-overlay">
+          <AnimatePresence mode="wait">
+            {reconstructed ? (
+              <motion.div
+                key="text"
+                initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: -10 }}
+                transition={springConf}
+                className="output-text"
+              >
+                "{reconstructed}"
+              </motion.div>
+            ) : (
+              <motion.div
+                key="placeholder"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="output-placeholder"
+              >
+                Awaiting intent string...
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
-      </div>
+        {/* Realistic Tactile Action Tray (Bottom Dock) */}
+        <div className="action-tray">
+          <motion.button
+            className="btn-primary"
+            onPointerDown={() => setIsScanning(!isScanning)}
+            style={{ flex: 1 }}
+            whileTap={{ scale: 0.95 }}
+            transition={springConf}
+          >
+            {isScanning ? 'Halt Radar' : 'Resume Radar'}
+          </motion.button>
 
-      <SettingsModal 
-        isOpen={isSettingsOpen} 
-        onClose={() => setIsSettingsOpen(false)} 
-      />
-    </div>
+          <motion.button
+            className="btn-calm"
+            onPointerDown={() => setIsCalmMode(true)}
+            aria-label="Activate Calm Mode"
+            whileTap={{ scale: 0.9 }}
+            transition={springConf}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path></svg>
+          </motion.button>
+        </div>
+
+        {/* Global Overlays */}
+        <SettingsModal
+          isOpen={isSettingsOpen}
+          onClose={() => setIsSettingsOpen(false)}
+        />
+
+        <AnimatePresence>
+          {isEmergencyMode && (<EmergencyPanel onClose={() => setIsEmergencyMode(false)} />)}
+        </AnimatePresence>
+
+      </div>
+    </CalmModeWrapper>
   );
 }

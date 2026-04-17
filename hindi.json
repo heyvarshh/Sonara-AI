@@ -1,0 +1,277 @@
+[
+{
+"id": 1,
+"audio_transcript": "वा... वा...",
+"acoustic_emotion": "high_energy",
+"visual_emotion": "frustrated",
+"gesture": "point",
+"intent": "मुझे पानी चाहिए",
+"urgency": "high"
+},
+{
+"id": 2,
+"audio_transcript": "न... नहीं...",
+"acoustic_emotion": "low_energy",
+"visual_emotion": "sad",
+"gesture": "stop",
+"intent": "मैं यह नहीं करना चाहता",
+"urgency": "low"
+},
+{
+"id": 3,
+"audio_transcript": "टो... टोय...",
+"acoustic_emotion": "medium_energy",
+"visual_emotion": "neutral",
+"gesture": "point",
+"intent": "मुझे शौचालय जाना है",
+"urgency": "medium"
+},
+{
+"id": 4,
+"audio_transcript": "आह! आह!",
+"acoustic_emotion": "high_energy",
+"visual_emotion": "pain",
+"gesture": "point_body",
+"intent": "मुझे दर्द हो रहा है",
+"urgency": "high"
+},
+{
+"id": 5,
+"audio_transcript": "फो... फो...",
+"acoustic_emotion": "medium_energy",
+"visual_emotion": "neutral",
+"gesture": "point",
+"intent": "मुझे भूख लगी है",
+"urgency": "medium"
+},
+
+{
+"id": 6,
+"audio_transcript": "हाँ...",
+"acoustic_emotion": "low_energy",
+"visual_emotion": "happy",
+"gesture": "thumbs_up",
+"intent": "हाँ",
+"urgency": "low"
+},
+{
+"id": 7,
+"audio_transcript": "नहीं!",
+"acoustic_emotion": "high_energy",
+"visual_emotion": "angry",
+"gesture": "stop",
+"intent": "नहीं",
+"urgency": "medium"
+},
+{
+"id": 8,
+"audio_transcript": "हे... हे...",
+"acoustic_emotion": "high_energy",
+"visual_emotion": "fear",
+"gesture": "wave",
+"intent": "मुझे मदद चाहिए",
+"urgency": "high"
+},
+{
+"id": 9,
+"audio_transcript": "थ... थ...",
+"acoustic_emotion": "low_energy",
+"visual_emotion": "sad",
+"gesture": "none",
+"intent": "मैं थक गया हूँ",
+"urgency": "low"
+},
+{
+"id": 10,
+"audio_transcript": "सो...",
+"acoustic_emotion": "low_energy",
+"visual_emotion": "neutral",
+"gesture": "none",
+"intent": "मैं सोना चाहता हूँ",
+"urgency": "low"
+},
+
+{
+"id": 11,
+"audio_transcript": "वा...",
+"acoustic_emotion": "medium_energy",
+"visual_emotion": "neutral",
+"gesture": "point",
+"intent": "मुझे पानी चाहिए",
+"urgency": "medium"
+},
+{
+"id": 12,
+"audio_transcript": "रु... रुको...",
+"acoustic_emotion": "high_energy",
+"visual_emotion": "angry",
+"gesture": "stop",
+"intent": "इसे रोको",
+"urgency": "high"
+},
+{
+"id": 13,
+"audio_transcript": "और...",
+"acoustic_emotion": "medium_energy",
+"visual_emotion": "neutral",
+"gesture": "point",
+"intent": "मुझे और चाहिए",
+"urgency": "medium"
+},
+{
+"id": 14,
+"audio_transcript": "नहीं...",
+"acoustic_emotion": "low_energy",
+"visual_emotion": "sad",
+"gesture": "none",
+"intent": "मुझे यह नहीं चाहिए",
+"urgency": "low"
+},
+{
+"id": 15,
+"audio_transcript": "प्ली...",
+"acoustic_emotion": "medium_energy",
+"visual_emotion": "neutral",
+"gesture": "none",
+"intent": "कृपया मेरी मदद करें",
+"urgency": "medium"
+},
+
+{
+"id": 16,
+"audio_transcript": "वा!",
+"acoustic_emotion": "high_energy",
+"visual_emotion": "angry",
+"gesture": "point",
+"intent": "मुझे तुरंत पानी चाहिए",
+"urgency": "high"
+},
+{
+"id": 17,
+"audio_transcript": "नहीं...",
+"acoustic_emotion": "low_energy",
+"visual_emotion": "neutral",
+"gesture": "thumbs_down",
+"intent": "नहीं",
+"urgency": "low"
+},
+{
+"id": 18,
+"audio_transcript": "हे...",
+"acoustic_emotion": "medium_energy",
+"visual_emotion": "sad",
+"gesture": "wave",
+"intent": "मेरी मदद करो",
+"urgency": "medium"
+},
+{
+"id": 19,
+"audio_transcript": "द...",
+"acoustic_emotion": "high_energy",
+"visual_emotion": "pain",
+"gesture": "point_body",
+"intent": "मुझे दर्द महसूस हो रहा है",
+"urgency": "high"
+},
+{
+"id": 20,
+"audio_transcript": "टो...",
+"acoustic_emotion": "high_energy",
+"visual_emotion": "frustrated",
+"gesture": "point",
+"intent": "मुझे शौचालय जाना है",
+"urgency": "high"
+},
+
+{
+"id": 21,
+"audio_transcript": "हाँ...",
+"acoustic_emotion": "medium_energy",
+"visual_emotion": "happy",
+"gesture": "nod",
+"intent": "हाँ",
+"urgency": "low"
+},
+{
+"id": 22,
+"audio_transcript": "नहीं...",
+"acoustic_emotion": "medium_energy",
+"visual_emotion": "frustrated",
+"gesture": "stop",
+"intent": "नहीं",
+"urgency": "medium"
+},
+{
+"id": 23,
+"audio_transcript": "खा...",
+"acoustic_emotion": "medium_energy",
+"visual_emotion": "neutral",
+"gesture": "point",
+"intent": "मैं खाना चाहता हूँ",
+"urgency": "medium"
+},
+{
+"id": 24,
+"audio_transcript": "पी...",
+"acoustic_emotion": "low_energy",
+"visual_emotion": "neutral",
+"gesture": "point",
+"intent": "मैं पानी पीना चाहता हूँ",
+"urgency": "low"
+},
+{
+"id": 25,
+"audio_transcript": "थ...",
+"acoustic_emotion": "low_energy",
+"visual_emotion": "sad",
+"gesture": "none",
+"intent": "मैं थक गया हूँ",
+"urgency": "low"
+},
+
+{
+"id": 26,
+"audio_transcript": "आह!",
+"acoustic_emotion": "high_energy",
+"visual_emotion": "fear",
+"gesture": "wave",
+"intent": "जल्दी मेरी मदद करो",
+"urgency": "high"
+},
+{
+"id": 27,
+"audio_transcript": "नहीं...",
+"acoustic_emotion": "low_energy",
+"visual_emotion": "neutral",
+"gesture": "none",
+"intent": "नहीं",
+"urgency": "low"
+},
+{
+"id": 28,
+"audio_transcript": "वा...",
+"acoustic_emotion": "medium_energy",
+"visual_emotion": "neutral",
+"gesture": "point",
+"intent": "कृपया पानी दें",
+"urgency": "medium"
+},
+{
+"id": 29,
+"audio_transcript": "प्ली...",
+"acoustic_emotion": "low_energy",
+"visual_emotion": "sad",
+"gesture": "none",
+"intent": "कृपया मदद करें",
+"urgency": "low"
+},
+{
+"id": 30,
+"audio_transcript": "रुको!",
+"acoustic_emotion": "high_energy",
+"visual_emotion": "angry",
+"gesture": "stop",
+"intent": "तुरंत रुक जाओ",
+"urgency": "high"
+}
+]
