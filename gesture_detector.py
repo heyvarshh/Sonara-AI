@@ -1,5 +1,5 @@
 """
-IntentCast Module 2 — Hand Gesture Detection
+IntentCast Module 2 — hand gesture detection
 
 Uses MediaPipe Gesture Recognizer in LIVE_STREAM mode with an async result
 callback. Frames are submitted via process_frame(); the latest detected
