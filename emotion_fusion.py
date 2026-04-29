@@ -7,7 +7,7 @@ No ML. Under 60 lines.
 """
 
 
-def fuse(face_result: dict, acoustic_result: dict, gesture_result: dict) -> str:
+def fuse(face_result: dict, acoustic_result: dict, gesture_result: dict) ->str:
     """Fuse multimodal signals into one emotion context string.
 
     Returns:
