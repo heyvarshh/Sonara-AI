@@ -10,7 +10,7 @@ fi
 
 # Download gesture model if not present
 if [ ! -f gesture_recognizer.task ]; then
-  echo "Downloading MediaPipe gesture model..."
+  echo "Downloading MediaPipe gesture model...
   curl -L -o gesture_recognizer.task \
     "https://storage.googleapis.com/mediapipe-models/gesture_recognizer/gesture_recognizer/float16/1/gesture_recognizer.task"
 fi
